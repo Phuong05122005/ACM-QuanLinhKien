@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: acm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: acm
+      POSTGRES_PASSWORD: acm_dev_password
+      POSTGRES_DB: acm
+    ports:
+      - "5432:5432"
+    volumes:
+      - acm_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  acm_postgres_data:
