@@ -4,7 +4,7 @@
 > **THÔNG BÁO BẢN QUYỀN & QUYỀN SỞ HỮU TRÍ TUỆ (COPYRIGHT NOTICE)**
 > Bản quyền © 2026 thuộc về **Phuong05122005** và **minhanhhhhhhh** (All Rights Reserved).
 > 
-> Toàn bộ tài liệu, thiết kế, cấu trúc hệ thống và mã nguồn trong tài nguyên dự án này (Smart-rental) là tài sản trí tuệ độc quyền của tác giả Phuong05122005, minhanhhhhhhh.
+> Toàn bộ tài liệu, thiết kế, cấu trúc hệ thống và mã nguồn trong tài nguyên dự án này (ACM - Hệ thống Quản lý Linh kiện & Thiết bị) là tài sản trí tuệ độc quyền của tác giả Phuong05122005, minhanhhhhhhh.
 > 
 > - 🚫 **Nghiêm cấm**: Trích xuất, sao chép, sửa đổi, phân phối hoặc tái sử dụng thương mại mà không có sự đồng ý bằng văn bản của tác giả.
 > - 🔒 **Sử dụng**: Dự án này được bảo hộ theo luật bản quyền và các công ước quốc tế về sở hữu trí tuệ.
