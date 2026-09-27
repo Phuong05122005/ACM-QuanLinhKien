@@ -20,7 +20,7 @@
 
 <br />
 
-**ACM (University Component Management)** là hệ thống quản lý linh kiện và thiết bị toàn diện dành cho trường đại học/phòng lab. Hệ thống giúp theo dõi, kiểm kê, cấp phát và thu hồi linh kiện một cách thông minh, nhanh chóng và chính xác.
+**ACM - Hệ thống Quản lý Linh kiện & Thiết bị** là hệ thống quản lý linh kiện và thiết bị toàn diện dành cho trường đại học/phòng lab. Hệ thống giúp theo dõi, kiểm kê, cấp phát và thu hồi linh kiện một cách thông minh, nhanh chóng và chính xác.
 
 ## ✨ Tính năng nổi bật
 
