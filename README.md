@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📦 ACM - Hệ thống Quản lý Linh kiện & Thiết bị
 
-## Getting Started
+<div align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js" />
+  <img alt="React" src="https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-8-2D3748?style=for-the-badge&logo=prisma&logoColor=white" />
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img alt="TailwindCSS" src="https://img.shields.io/badge/TailwindCSS-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+</div>
 
-First, run the development server:
+<br />
 
+**ACM (University Component Management)** là hệ thống quản lý linh kiện và thiết bị toàn diện dành cho trường đại học/phòng lab. Hệ thống giúp theo dõi, kiểm kê, cấp phát và thu hồi linh kiện một cách thông minh, nhanh chóng và chính xác.
+
+## ✨ Tính năng nổi bật
+
+- 🔐 **Xác thực & Phân quyền**: Quản lý truy cập an toàn với nhiều vai trò (Admin, Sinh viên).
+- 📦 **Quản lý Kho & Thiết bị**: Theo dõi chi tiết tình trạng, số lượng, lịch sử thiết bị.
+- 🔄 **Quy trình Mượn/Trả**: Tự động hóa quy trình mượn, trả linh kiện, quản lý các đơn mượn.
+- 📱 **Tích hợp Mã QR**: Quét mã QR để định danh và tra cứu thông tin thiết bị tức thì.
+- ⚖️ **Hệ thống Khiếu nại**: Giải quyết các tranh chấp, khiếu nại về số lượng/tình trạng linh kiện.
+- 📊 **Dashboard & Báo cáo**: Tổng hợp dữ liệu trực quan về tình hình sử dụng kho.
+
+## 🚀 Công nghệ sử dụng
+
+- **Frontend & Backend**: Next.js 16 (App Router), React 19.
+- **Giao diện**: Tailwind CSS v4, Lucide Icons.
+- **Database**: PostgreSQL tích hợp cùng Prisma ORM v8.
+- **Testing**: Playwright (E2E), Vitest.
+
+## 🛠️ Hướng dẫn cài đặt
+
+### 1. Yêu cầu hệ thống
+- [Node.js](https://nodejs.org/) (phiên bản 20 trở lên)
+- [PostgreSQL](https://www.postgresql.org/) (đã được cài đặt hoặc chạy qua Docker)
+
+### 2. Cài đặt dự án
+
+Clone repository về máy:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Phuong05122005/ACM-QuanLinhKien.git
+cd ACM-QuanLinhKien
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Cài đặt các thư viện phụ thuộc:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Cấu hình môi trường
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tạo file `.env` từ file mẫu:
+```bash
+cp .env.example .env
+```
+Điền các thông tin kết nối tới cơ sở dữ liệu PostgreSQL của bạn vào biến `DATABASE_URL`. Bạn cũng có thể dùng file `docker-compose.yml` có sẵn để chạy DB qua docker:
+```bash
+docker-compose up -d
+```
 
-## Learn More
+### 4. Khởi tạo Database (Prisma)
 
-To learn more about Next.js, take a look at the following resources:
+Đồng bộ schema với database (hoặc chạy migration nếu có):
+```bash
+npx prisma db push
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 5. Chạy ứng dụng
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Khởi động server ở môi trường development:
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+Mở trình duyệt và truy cập [http://localhost:3000](http://localhost:3000) để trải nghiệm.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👥 Tác giả
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Dự án được phát triển và đóng góp bởi:
+
+- 👤 **[Phuong05122005](https://github.com/Phuong05122005)**
+- 👤 **[minhanhhhhhhh](https://github.com/minhanhhhhhhh)**
+
+---
+*Cảm ơn bạn đã quan tâm đến dự án!* 💖
