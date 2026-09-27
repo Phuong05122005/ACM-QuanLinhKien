@@ -5,55 +5,73 @@ export class DashboardService {
     const countsRes = await pool.query(`
       SELECT 
         COUNT(*) FILTER (WHERE status = 'BORROWED') as active_count,
-        COUNT(*) FILTER (WHERE status = 'OVERDUE') as overdue_count,
-        COUNT(*) FILTER (WHERE status IN ('PENDING', 'APPROVED', 'READY_FOR_PICKUP')) as pending_count
-      FROM loans WHERE user_id = $1
-    `, [userId]);
-
-    const recentLoansRes = await pool.query(`
-      SELECT * FROM loans WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5
+        COUNT(*) FILTER (WHERE status = 'PENDING') as pending_count,
+        COUNT(*) FILTER (WHERE status = 'BORROWED' AND due_date < NOW()) as overdue_count
+      FROM loans 
+      WHERE user_id = $1
     `, [userId]);
 
     const upcomingDueRes = await pool.query(`
-      SELECT * FROM loans 
-      WHERE user_id = $1 AND status = 'BORROWED' AND expected_return_date >= NOW()
-      ORDER BY expected_return_date ASC LIMIT 5
+      SELECT id, loan_code, status, due_date 
+      FROM loans 
+      WHERE user_id = $1 AND status = 'BORROWED'
+      ORDER BY due_date ASC
+      LIMIT 5
     `, [userId]);
 
-    const notifRes = await pool.query(`
-      SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = $1 AND is_read = false
+    const unreadNotificationsRes = await pool.query(`
+      SELECT COUNT(*) as unread_count 
+      FROM notifications 
+      WHERE user_id = $1 AND is_read = false
     `, [userId]);
 
     return {
       counts: countsRes.rows[0],
-      recent_loans: recentLoansRes.rows,
       upcoming_due: upcomingDueRes.rows,
-      unread_notifications: parseInt(notifRes.rows[0].unread_count, 10)
+      unread_notifications: parseInt(unreadNotificationsRes.rows[0].unread_count, 10)
     };
   }
 
-  static async getAdminDashboard(): Promise<{loans: Record<string, number>, kits: Record<string, number>, disputes: Record<string, number>, ai_scans: Record<string, number>, trend: Record<string, unknown>[]}> {
-    const loanCounts = await pool.query(`SELECT status, COUNT(*) FROM loans GROUP BY status`);
-    const kitCounts = await pool.query(`SELECT status, COUNT(*) FROM kits GROUP BY status`);
-    const disputeCounts = await pool.query(`SELECT status, COUNT(*) FROM disputes GROUP BY status`);
-    const aiCounts = await pool.query(`SELECT category, COUNT(*) FROM ai_scans GROUP BY category`);
-
-    const trend = await pool.query(`
-      SELECT DATE(created_at) as date, COUNT(*) 
-      FROM loans 
-      WHERE created_at >= NOW() - INTERVAL '30 days' 
-      GROUP BY DATE(created_at) ORDER BY date
+  static async getAdminDashboard() {
+    // Inventory overview
+    const inventoryRes = await pool.query(`
+      SELECT 
+        SUM(total_quantity) as total_components,
+        SUM(available_quantity) as available_components
+      FROM components
     `);
 
-    // Basic map transformation
-    const arrayToMap = (rows: Record<string, unknown>[], keyCol: string, valCol: string): Record<string, number> => { const map: Record<string, number> = {}; rows.forEach(row => { map[String(row[keyCol])] = parseInt(String(row[valCol]), 10); }); return map; };
+    // Loans by status
+    const loansRes = await pool.query(`
+      SELECT status, COUNT(*) 
+      FROM loans 
+      GROUP BY status
+    `);
+
+    // Disputes by status
+    const disputesRes = await pool.query(`
+      SELECT status, COUNT(*) 
+      FROM disputes 
+      GROUP BY status
+    `);
+
+    // AI scans by status
+    const aiScansRes = await pool.query(`
+      SELECT status, COUNT(*) 
+      FROM ai_scans 
+      GROUP BY status
+    `);
+
+    const formatCounts = (rows: { status: string; count: string }[]) => rows.reduce((acc, row) => ({ ...acc, [row.status]: parseInt(row.count, 10) }), {} as Record<string, number>);
 
     return {
-      loans: arrayToMap(loanCounts.rows, 'status', 'count'),
-      kits: arrayToMap(kitCounts.rows, 'status', 'count'),
-      disputes: arrayToMap(disputeCounts.rows, 'status', 'count'),
-      ai_scans: arrayToMap(aiCounts.rows, 'category', 'count'),
-      trend: trend.rows,
+      components: {
+        total: parseInt(inventoryRes.rows[0].total_components || '0', 10),
+        available: parseInt(inventoryRes.rows[0].available_components || '0', 10)
+      },
+      loans: formatCounts(loansRes.rows),
+      disputes: formatCounts(disputesRes.rows),
+      ai_scans: formatCounts(aiScansRes.rows)
     };
   }
 }

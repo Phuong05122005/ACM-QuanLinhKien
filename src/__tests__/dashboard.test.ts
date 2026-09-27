@@ -31,24 +31,25 @@ describe('Dashboard Service', () => {
 
   it('should aggregate admin dashboard data avoiding N+1', async () => {
     vi.mocked(pool.query).mockImplementation(async (queryStr: string) => {
-      if (queryStr.includes('kits GROUP BY status')) {
-        return { rows: [{ status: 'AVAILABLE', count: '10' }, { status: 'IN_USE', count: '5' }] };
+      if (queryStr.includes('SUM(total_quantity)')) {
+        return { rows: [{ total_components: '100', available_components: '80' }] };
       }
-      if (queryStr.includes('loans GROUP BY status')) {
+      if (queryStr.includes('FROM loans')) {
         return { rows: [{ status: 'PENDING', count: '3' }, { status: 'RETURN_REQUIRES_INSPECTION', count: '2' }] };
       }
-      if (queryStr.includes('disputes GROUP BY status')) {
+      if (queryStr.includes('FROM disputes')) {
         return { rows: [{ status: 'PENDING', count: '1' }] };
       }
-      if (queryStr.includes('ai_scans GROUP BY category')) {
-        return { rows: [{ category: 'NORMAL', count: '20' }] };
+      if (queryStr.includes('FROM ai_scans')) {
+        return { rows: [{ status: 'COMPLETED', count: '20' }] };
       }
       return { rows: [] };
     });
 
     const data = await DashboardService.getAdminDashboard();
-    expect(data.kits['AVAILABLE']).toBe(10);
+    expect(data.components.total).toBe(100);
+    expect(data.components.available).toBe(80);
     expect(data.loans['RETURN_REQUIRES_INSPECTION']).toBe(2);
-    expect(data.ai_scans['NORMAL']).toBe(20);
+    expect(data.ai_scans['COMPLETED']).toBe(20);
   });
 });

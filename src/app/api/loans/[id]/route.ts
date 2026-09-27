@@ -47,7 +47,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     loan.history = historyRes.rows;
 
-    const scanRes = await pool.query(`SELECT id FROM ai_scans WHERE loan_id =  ORDER BY created_at DESC LIMIT 1`, [id]);
+    const scanRes = await pool.query(`SELECT id FROM ai_scans WHERE loan_id = $1 ORDER BY created_at DESC LIMIT 1`, [id]);
     if (scanRes.rows.length > 0) loan.latest_scan_id = scanRes.rows[0].id;
 
     return successResponse(loan);

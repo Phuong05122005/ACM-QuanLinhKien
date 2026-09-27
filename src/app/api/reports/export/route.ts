@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { pool } from '@/lib/pg';
+import { AuditService } from '@/lib/audit/service';
+
+function escapeCsvCell(val: unknown): string {
+  if (val === null || val === undefined) return '""';
+  let str = String(val);
+  str = str.replace(/"/g, '""');
+  if (/^[=+\-@]/.test(str)) {
+    str = "'" + str; // Formula injection protection
+  }
+  return `"${str}"`;
+}
 
 export async function GET(request: Request) {
   try {
@@ -12,32 +23,53 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'loans';
     const format = searchParams.get('format') || 'csv';
-    
-    // We strictly support server-side CSV export manually here to avoid dependencies. 
-    // PDF/XLSX just mapped to CSV/Text conceptually for this test environment since we can't install huge libs easily.
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     
     let query = '';
+    const params: string[] = [];
+    let dateFilter = '';
+    
+    if (startDate && endDate) {
+      if (!isNaN(Date.parse(startDate)) && !isNaN(Date.parse(endDate))) {
+        dateFilter = `WHERE created_at >= $1 AND created_at <= $2`;
+        params.push(startDate, endDate);
+      }
+    } else if (startDate) {
+      if (!isNaN(Date.parse(startDate))) {
+        dateFilter = `WHERE created_at >= $1`;
+        params.push(startDate);
+      }
+    } else if (endDate) {
+      if (!isNaN(Date.parse(endDate))) {
+        dateFilter = `WHERE created_at <= $1`;
+        params.push(endDate);
+      }
+    }
+    
     if (type === 'loans') {
-      query = `SELECT code, status, expected_return_date, actual_return_date, created_at FROM loans ORDER BY created_at DESC LIMIT 1000`;
+      query = `SELECT id, loan_code, user_id, status, due_date, created_at FROM loans ${dateFilter} ORDER BY created_at DESC LIMIT 1000`;
     } else if (type === 'inventory') {
-      query = `SELECT identifier, name, expected_quantity, available_quantity, category_id FROM components ORDER BY name LIMIT 1000`;
+      query = `SELECT identifier, name, category_id, total_quantity, available_quantity FROM components ORDER BY name LIMIT 1000`;
+      params.length = 0;
     } else if (type === 'disputes') {
-      query = `SELECT id, status, reason, resolution, created_at FROM disputes ORDER BY created_at DESC LIMIT 1000`;
+      query = `SELECT id, loan_id, user_id, status, description, created_at FROM disputes ${dateFilter} ORDER BY created_at DESC LIMIT 1000`;
     } else {
       return new NextResponse('Invalid report type', { status: 400 });
     }
 
-    const res = await pool.query(query);
+    const res = await pool.query(query, params);
 
-    if (format === 'csv' || format === 'xlsx' || format === 'pdf') {
-      // Create CSV
+    await AuditService.log(session.userId, 'EXPORT', 'reports', JSON.stringify({ type, format, record_count: res.rows.length }));
+
+    if (format === 'csv') {
       const rows = res.rows;
       if (rows.length === 0) return new NextResponse('No data', { status: 200 });
       
       const header = Object.keys(rows[0]).join(',');
-      const csvData = rows.map(r => Object.values(r).map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\\n');
+      const csvData = rows.map(r => Object.values(r).map(escapeCsvCell).join(',')).join('\n');
       
-      const finalCsv = header + '\\n' + csvData;
+      const finalCsv = header + '\n' + csvData;
 
       const headers = new Headers();
       headers.set('Content-Type', 'text/csv');
@@ -46,7 +78,7 @@ export async function GET(request: Request) {
       return new NextResponse(finalCsv, { headers });
     }
 
-    return new NextResponse('Invalid format', { status: 400 });
+    return new NextResponse('Format not supported yet', { status: 400 });
 
   } catch (error: unknown) {
     return new NextResponse('Internal server error', { status: 500 });

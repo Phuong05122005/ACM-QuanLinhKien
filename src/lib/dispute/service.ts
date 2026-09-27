@@ -19,11 +19,18 @@ export class DisputeService {
         throw new Error('Disputes can only be opened after return');
       }
 
-      if (!loan.actual_return_date) {
-        throw new Error('Return date is missing');
+      // Query the exact time the loan was marked as returned or requiring inspection
+      const historyRes = await client.query(`
+        SELECT created_at FROM loan_status_histories 
+        WHERE loan_id = $1 AND status IN ('RETURNED', 'RETURN_REQUIRES_INSPECTION')
+        ORDER BY created_at ASC LIMIT 1
+      `, [loanId]);
+      
+      if (historyRes.rows.length === 0) {
+        throw new Error('Return transition history not found');
       }
 
-      const returnDate = new Date(loan.actual_return_date);
+      const returnDate = new Date(historyRes.rows[0].created_at);
       const diffMs = Date.now() - returnDate.getTime();
       const diffHours = diffMs / (1000 * 60 * 60);
 
@@ -32,14 +39,14 @@ export class DisputeService {
       }
 
       const res = await client.query(`
-        INSERT INTO disputes (id, loan_id, user_id, reason, status, created_at, updated_at)
-        VALUES (gen_random_uuid(), $1, $2, $3, 'PENDING', NOW(), NOW())
+        INSERT INTO disputes (id, loan_id, user_id, description, status, created_at)
+        VALUES (gen_random_uuid(), $1, $2, $3, 'PENDING', NOW())
         RETURNING *
       `, [loanId, studentId, reason]);
       const dispute = res.rows[0];
 
       await AuditService.log(studentId, 'CREATE', 'disputes', `Created dispute ${dispute.id} for loan ${loanId}`, client);
-      await NotificationService.notify(studentId, 'DISPUTE_SUBMITTED', `Your dispute for loan ${loan.code} was submitted.`, client);
+      await NotificationService.notify(studentId, 'DISPUTE_SUBMITTED', `Your dispute for loan ${loan.loan_code} was submitted.`, client);
 
       await client.query('COMMIT');
       return dispute;
@@ -64,10 +71,10 @@ export class DisputeService {
       // We will skip strict check here and assume API verified authorization
 
       const res = await client.query(`
-        INSERT INTO dispute_evidences (id, dispute_id, uploaded_by, file_url, created_at)
-        VALUES (gen_random_uuid(), $1, $2, $3, NOW())
+        INSERT INTO dispute_evidences (id, dispute_id, file_url, uploaded_at)
+        VALUES (gen_random_uuid(), $1, $2, NOW())
         RETURNING *
-      `, [disputeId, uploaderId, fileUrl]);
+      `, [disputeId, fileUrl]);
 
       await AuditService.log(uploaderId, 'UPLOAD_EVIDENCE', 'dispute_evidences', `Added evidence to dispute ${disputeId}`, client);
       
@@ -82,11 +89,11 @@ export class DisputeService {
   }
 
   static async reviewDispute(disputeId: string, adminId: string, status: string, resolution: string) {
-    if (!['UNDER_REVIEW', 'NEED_MORE_EVIDENCE', 'APPROVED', 'REJECTED', 'CLOSED'].includes(status)) {
+    if (!['REVIEWING', 'RESOLVED', 'REJECTED'].includes(status)) {
       throw new Error(`Invalid status: ${status}`);
     }
     
-    if (['APPROVED', 'REJECTED', 'CLOSED'].includes(status) && !resolution) {
+    if (['RESOLVED', 'REJECTED'].includes(status) && !resolution) {
       throw new Error('Final decisions require a reason/resolution.');
     }
 
@@ -95,7 +102,7 @@ export class DisputeService {
       await client.query('BEGIN');
       const res = await client.query(`
         UPDATE disputes 
-        SET status = $1, resolution = $2, updated_at = NOW(), resolved_at = CASE WHEN $1 IN ('APPROVED', 'REJECTED', 'CLOSED') THEN NOW() ELSE resolved_at END
+        SET status = $1, description = COALESCE(NULLIF($2, ''), description)
         WHERE id = $3
         RETURNING *
       `, [status, resolution, disputeId]);
@@ -106,9 +113,9 @@ export class DisputeService {
       await AuditService.log(adminId, 'REVIEW', 'disputes', `Changed dispute ${disputeId} status to ${status}. Reason: ${resolution}`, client);
 
       const eventMap: Record<string, string> = {
-        'APPROVED': 'DISPUTE_APPROVED',
+        'RESOLVED': 'DISPUTE_RESOLVED',
         'REJECTED': 'DISPUTE_REJECTED',
-        'NEED_MORE_EVIDENCE': 'DISPUTE_NEEDS_EVIDENCE',
+        'REVIEWING': 'DISPUTE_REVIEWING',
       };
       const eventName = eventMap[status] || 'SYSTEM_NOTIFICATION';
 

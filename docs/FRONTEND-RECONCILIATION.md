@@ -1,0 +1,18 @@
+# FRONTEND RECONCILIATION MATRIX
+
+| UC | Requirement | Route | Page | Component | API | Backend Service | Permission | Implemented | Missing | Evidence/Test |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **UC01** | Đăng nhập hệ thống | `/login` | `login/page.tsx` | N/A | `POST /api/auth/login` | Auth | ANY | 🟢 COMPLETE | | Rebuilt with loading/error states & locking. |
+| **UC02** | Quản lý người dùng & Phân quyền | `/admin/users` | `admin/users/page.tsx` | `ConfirmDialog` | `GET/POST/PATCH /api/users` | Audit/Auth | ADMIN, SUPER_ADMIN | 🟢 COMPLETE | | Displays full table, handles status toggle & role changes. |
+| **UC03** | Quản lý danh mục linh kiện | `/admin/components` | `admin/components/page.tsx` | `EmptyState` | `GET /api/components` | Inventory | ADMIN | 🟡 PARTIAL | Edit/Delete modal flows | Rebuilt UI into AppShell with search. CRUD details missing. |
+| **UC04** | Sinh mã QR (Gắn với Linh kiện/Kit) | `/admin/qr` | `admin/qr/page.tsx` | `EmptyState` | `GET/POST /api/qr` | QRService | ADMIN | 🟡 PARTIAL | Print QR action, link flow UI | Fetches QR codes accurately bound to DB fields. |
+| **UC05** | Đăng ký mượn linh kiện | `/loans/new` | `loans/new/page.tsx` | `EmptyState` | `POST /api/loans` | LoanService | STUDENT | 🟢 COMPLETE | | Fixed DB schema regression (removed phantom kit_id). Enforces 5 item limit. |
+| **UC06** | Quản lý Đơn mượn | `/loans`, `/admin/loans` | `loans/page.tsx`, `admin/loans/page.tsx` | `StatusBadge` | `GET /api/loans` | LoanService | STUDENT, ADMIN | 🟢 COMPLETE | | Both views retrofit to AppShell with filters. |
+| **UC07** | Nhận linh kiện (Pickup) | `/loans/[id]/pickup` | `loans/[id]/pickup/page.tsx` | `QrCode` | `GET /api/loans/[id]` | LoanService | STUDENT | 🟡 PARTIAL | Scanner UI for Admin | UI displays QR code properly for ready loans. Admin scanner missing. |
+| **UC08** | Trả linh kiện & AI Inspection | `/loans/[id]/return` | `loans/[id]/return/page.tsx` | `Upload` | `POST /api/loans/[id]/return` | LoanService | STUDENT | 🟢 COMPLETE | | Rebuilt with AI upload simulation and flow to Requires Inspection. |
+| **UC09** | Quản trị Kết quả kiểm kê AI | `/admin/ai-inspections` | `ai-inspections/page.tsx` | N/A | `GET/POST /api/admin/reviews` | LoanService | ADMIN | 🟢 COMPLETE | | Split master/detail UI. Handles CONFIRM/CORRECT/REJECT. |
+| **UC10** | Giải quyết Khiếu nại | `/disputes`, `/admin/disputes` | `disputes/page.tsx`, `admin/disputes/page.tsx` | `EmptyState` | `GET /api/disputes` | DisputeService | STUDENT, ADMIN | 🟡 PARTIAL | Evidence upload flow | Lists disputes on both student and admin sides inside AppShell. |
+| **UC11** | Xem Báo cáo & Dashboard | `/`, `/admin` | `page.tsx`, `admin/page.tsx` | N/A | SSR Queries | Reporting | STUDENT, ADMIN | 🟡 PARTIAL | PDF/XLSX Exporters | Dashboards completely built with real DB metrics. PDF/XLSX exporters missing (CSV only). |
+| **UC12** | Quản trị Nhật ký hoạt động | `/admin/audit-logs` | `admin/audit-logs/page.tsx` | `EmptyState` | `GET /api/admin/audit` | AuditService | ADMIN | 🟢 COMPLETE | | Immutable chronological display of system audits. |
+| **UC13** | Quản trị Cấu hình & Thông báo | `/admin/settings`, `/notifications` | `admin/settings/page.tsx` | N/A | `GET/POST /api/configs` | ConfigService | ADMIN | 🟡 PARTIAL | Notification UX center | System config saves correctly. Notification center UI is missing. |
+| **UC14** | Vận hành khẩn cấp (Emergency) | `/admin/emergency` | `admin/emergency/page.tsx` | `ConfirmDialog` | `POST /api/admin/emergency` | LoanService | SUPER_ADMIN | 🔴 MISSING | Service method sync | UI built but API endpoint uses direct UPDATE which bypasses state machine and inventory invariant recovery. |

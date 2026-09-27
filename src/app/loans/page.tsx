@@ -1,67 +1,97 @@
-import React from 'react';
+'use client';
+import { useState, useEffect } from 'react';
+import { Search, FileText } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import Link from 'next/link';
-import { pool } from '@/lib/pg';
-import { getSession } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
+type Loan = {
+  id: string;
+  loan_code: string;
+  status: string;
+  created_at: string;
+};
 
-export default async function StudentLoansPage() {
-  const session = await getSession();
-  
-  const res = await pool.query(`
-    SELECT l.*
-    FROM loans l
-    WHERE l.user_id = $1
-    ORDER BY l.created_at DESC
-  `, [session?.userId]);
-  
-  const loans = res.rows;
+export default function StudentLoansPage() {
+  const [loans, setLoans] = useState<Loan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/loans')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setLoans(data.data);
+        setLoading(false);
+      });
+  }, []);
+
+  const getStatusBadge = (status: string) => {
+    const map: Record<string, { label: string, color: string }> = {
+      PENDING: { label: 'Chờ duyệt', color: 'bg-amber-100 text-amber-700' },
+      APPROVED: { label: 'Đã duyệt', color: 'bg-blue-100 text-blue-700' },
+      READY_FOR_PICKUP: { label: 'Chờ nhận', color: 'bg-indigo-100 text-indigo-700' },
+      BORROWED: { label: 'Đang mượn', color: 'bg-purple-100 text-purple-700' },
+      RETURN_REQUIRES_INSPECTION: { label: 'Chờ kiểm tra', color: 'bg-orange-100 text-orange-700' },
+      RETURNED: { label: 'Đã trả', color: 'bg-green-100 text-green-700' },
+      REJECTED: { label: 'Từ chối', color: 'bg-red-100 text-red-700' },
+      CANCELED: { label: 'Đã hủy', color: 'bg-slate-100 text-slate-700' },
+      OVERDUE: { label: 'Quá hạn', color: 'bg-red-100 text-red-700 font-bold' }
+    };
+    const s = map[status] || { label: status, color: 'bg-slate-100 text-slate-700' };
+    return <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${s.color}`}>{s.label}</span>;
+  };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Loans</h1>
-        <Link href="/loans/new" className="bg-blue-600 text-white font-bold px-4 py-2 rounded shadow hover:bg-blue-700">
-          + Request Loan
-        </Link>
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Đơn mượn của tôi</h1>
+        <p className="text-sm text-slate-500 mt-1">Lịch sử và trạng thái các đơn đăng ký mượn linh kiện</p>
       </div>
-      
-      <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
-        {loans.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">You have no loan history.</div>
-        ) : (
-          <table className="min-w-full text-left">
-            <thead className="bg-gray-50 border-b">
+
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-600">
+            <thead className="bg-slate-50 text-slate-700 font-medium uppercase text-xs">
               <tr>
-                <th className="py-3 px-4 font-semibold text-gray-700">Code</th>
-                <th className="py-3 px-4 font-semibold text-gray-700">Status</th>
-                <th className="py-3 px-4 font-semibold text-gray-700">Return Date</th>
-                <th className="py-3 px-4 font-semibold text-gray-700 text-right">Action</th>
+                <th className="px-6 py-4">Mã đơn</th>
+                <th className="px-6 py-4">Trạng thái</th>
+                <th className="px-6 py-4">Ngày tạo</th>
+                <th className="px-6 py-4 text-right">Chi tiết</th>
               </tr>
             </thead>
-            <tbody>
-              {loans.map(loan => (
-                <tr key={loan.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium">{loan.code}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 text-xs font-bold rounded ${
-                      loan.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                      loan.status === 'APPROVED' ? 'bg-blue-100 text-blue-800' :
-                      loan.status === 'BORROWED' ? 'bg-purple-100 text-purple-800' :
-                      loan.status === 'RETURNED' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {loan.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600 text-sm">
-                    {new Date(loan.expected_return_date).toLocaleDateString()}
+            <tbody className="divide-y divide-slate-200">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4"><LoadingSkeleton className="h-4 w-24" /></td>
+                    <td className="px-6 py-4"><LoadingSkeleton className="h-4 w-20" /></td>
+                    <td className="px-6 py-4"><LoadingSkeleton className="h-4 w-24" /></td>
+                    <td className="px-6 py-4"><LoadingSkeleton className="h-4 w-8 ml-auto" /></td>
+                  </tr>
+                ))
+              ) : loans.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12">
+                    <EmptyState title="Bạn chưa có đơn mượn nào" description="Bạn có thể tạo đơn mượn mới từ trang chủ." />
                   </td>
                 </tr>
-              ))}
+              ) : (
+                loans.map(loan => (
+                  <tr key={loan.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-mono font-bold text-slate-900">{loan.loan_code}</td>
+                    <td className="px-6 py-4">{getStatusBadge(loan.status)}</td>
+                    <td className="px-6 py-4">{new Date(loan.created_at).toLocaleString('vi-VN')}</td>
+                    <td className="px-6 py-4 text-right">
+                      <Link href={`/loans/${loan.id}/pickup`} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+                        <FileText className="h-4 w-4" /> Mã QR / Nhận trả
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
-        )}
+        </div>
       </div>
     </div>
   );

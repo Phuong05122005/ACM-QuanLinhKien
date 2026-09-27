@@ -60,6 +60,7 @@ model Component {
   total_quantity     Int       @default(0)
   available_quantity Int       @default(0)
   identifier         String    @unique
+  image_url          String?
   created_at         DateTime  @default(now())
 
   category               ComponentCategory       @relation(fields: [category_id], references: [id])

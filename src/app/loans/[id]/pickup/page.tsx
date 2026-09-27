@@ -1,85 +1,110 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+﻿'use client';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { QrCode, CheckCircle2, AlertCircle, Calendar } from 'lucide-react';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
-export default function PickupLoanPage({ params }: { params: Promise<{ id: string }> }) {
+export default function PickupPage() {
+  const { id } = useParams();
   const router = useRouter();
-  const id = React.use(params).id;
-  
-  const [qrCode, setQrCode] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loan, setLoan] = useState<{ status: string; loan_code: string; due_date: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [qrInput, setQrInput] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleScan = async (e: React.FormEvent) => {
+  const fetchLoan = () => {
+    fetch(`/api/loans/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setLoan(data.data);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (id) fetchLoan();
+  }, [id]);
+
+  const handlePickup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    
+    if (!qrInput) return;
+    setSubmitting(true);
+    setErrorMsg('');
     try {
       const res = await fetch(`/api/loans/${id}/pickup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qr_code: qrCode })
+        body: JSON.stringify({ qr_code: qrInput })
       });
-      const data = await res.json();
-      
-      if (!res.ok) {
-        setError(data.error?.message || 'Pickup failed');
+      if (res.ok) {
+        fetchLoan();
+        router.refresh();
       } else {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push('/loans');
-        }, 2000);
+        const err = await res.json();
+        setErrorMsg(err.error?.message || 'Lỗi xác thực QR');
       }
-    } catch (error: unknown) {
-      setError('An unexpected error occurred');
+    } catch (e) {
+      setErrorMsg('Lỗi kết nối');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
+  if (loading) return <div className="p-8"><LoadingSkeleton className="h-64 w-full max-w-md mx-auto" /></div>;
+  if (!loan) return <div className="p-8 text-center text-red-600">Không tìm thấy đơn mượn.</div>;
+
+  const isReady = loan.status === 'READY_FOR_PICKUP' || loan.status === 'APPROVED';
+  const isBorrowed = loan.status === 'BORROWED';
+
   return (
-    <div className="max-w-md mx-auto py-12 px-4">
-      <Link href="/loans" className="text-blue-600 hover:underline mb-6 inline-block">
-        &larr; Back to My Loans
-      </Link>
-      
-      <div className="bg-white p-8 rounded shadow-md text-center border border-gray-200">
-        <h1 className="text-2xl font-bold mb-4">Scan QR to Pickup</h1>
-        <p className="text-gray-600 mb-8">Scan the physical item to confirm you have picked it up.</p>
-        
-        {success ? (
-          <div className="bg-green-100 text-green-800 p-6 rounded mb-4 font-bold text-lg border border-green-200">
-            ✅ Pickup Successful!
-            <p className="text-sm font-normal mt-2">Redirecting to your loans...</p>
+    <div className="max-w-md mx-auto space-y-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-slate-900">Xác thực Nhận Kit</h1>
+        <p className="text-sm text-slate-500 mt-1">
+          {isBorrowed ? 'Đã xác thực nhận hàng thành công.' : 'Nhập mã QR trên Kit/Linh kiện để xác thực.'}
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-center p-8">
+        <div className="mb-6">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-slate-100 text-slate-800">
+            {loan.loan_code}
+          </span>
+        </div>
+
+        {isBorrowed ? (
+          <div className="h-48 flex items-center justify-center bg-green-50 border border-green-200 rounded-xl mb-6 flex-col gap-3 text-green-600">
+            <CheckCircle2 className="h-10 w-10" />
+            <span className="text-sm font-medium">Đã nhận hàng</span>
           </div>
-        ) : (
-          <form onSubmit={handleScan}>
-            {error && <div className="mb-4 text-red-600 bg-red-50 p-3 rounded text-sm text-left">{error}</div>}
-            
-            <div className="mb-6 relative">
-              <input 
-                type="text" 
-                required
-                className="w-full border-2 border-gray-300 p-4 rounded text-center text-xl uppercase font-mono focus:border-blue-500 focus:outline-none"
-                value={qrCode}
-                onChange={e => setQrCode(e.target.value.toUpperCase())}
-                placeholder="QR-XXXX-XXXXXX"
-                autoFocus
-              />
-            </div>
-            
-            <button 
-              type="submit" 
-              disabled={loading || !qrCode}
-              className="w-full bg-blue-600 text-white font-bold py-3 rounded shadow hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Verifying...' : 'Confirm Pickup'}
+        ) : isReady ? (
+          <form onSubmit={handlePickup} className="mb-6 text-left">
+            <label className="block text-sm font-medium text-slate-700 mb-2">Mã QR</label>
+            <input 
+              type="text" 
+              required
+              value={qrInput}
+              onChange={e => setQrInput(e.target.value)}
+              placeholder="Nhập mã QR..."
+              className="w-full border border-slate-300 rounded-lg p-3 mb-4"
+            />
+            {errorMsg && <p className="text-red-600 text-sm mb-4">{errorMsg}</p>}
+            <button type="submit" disabled={submitting || !qrInput} className="w-full bg-blue-600 text-white font-medium p-3 rounded-lg hover:bg-blue-700">
+              {submitting ? 'Đang xử lý...' : 'Xác thực nhận hàng'}
             </button>
           </form>
+        ) : (
+          <div className="h-48 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl mb-6 flex-col gap-3 text-slate-400">
+            <AlertCircle className="h-10 w-10" />
+            <span className="text-sm font-medium">Chưa sẵn sàng nhận</span>
+          </div>
         )}
+
+        <div className="flex items-center justify-center gap-2 text-slate-500 text-sm border-t border-slate-100 pt-4">
+          <Calendar className="h-4 w-4" />
+          <span>Hạn trả: {new Date(loan.due_date).toLocaleDateString('vi-VN')}</span>
+        </div>
       </div>
     </div>
   );

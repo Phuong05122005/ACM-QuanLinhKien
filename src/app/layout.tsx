@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-
-const inter = Inter({ subsets: ["latin"] });
+import { AppShell } from "@/components/ui/AppShell";
 
 export const metadata: Metadata = {
-  title: "ACM System",
-  description: "Asset & Component Management System",
+  title: "ACM System - University Component Management",
+  description: "Hệ thống quản lý linh kiện và thiết bị",
 };
 
 export default function RootLayout({
@@ -16,10 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="vi">
+      <body className={`font-sans bg-slate-50 text-slate-900`}>
         <ErrorBoundary>
-          {children}
+          <AppShell>{children}</AppShell>
         </ErrorBoundary>
       </body>
     </html>

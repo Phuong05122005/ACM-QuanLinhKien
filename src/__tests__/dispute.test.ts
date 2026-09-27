@@ -22,7 +22,10 @@ describe('Dispute Service', () => {
       query: vi.fn().mockImplementation(async (queryStr: string) => {
         if (queryStr === 'BEGIN' || queryStr === 'ROLLBACK') return {};
         if (queryStr.includes('SELECT * FROM loans')) {
-          return { rows: [{ id: 'L1', user_id: 'student-1', status: 'RETURN_REQUIRES_INSPECTION', actual_return_date: oldDate }] };
+          return { rows: [{ id: 'L1', user_id: 'student-1', status: 'RETURN_REQUIRES_INSPECTION' }] };
+        }
+        if (queryStr.includes('loan_status_histories')) {
+          return { rows: [{ created_at: oldDate }] };
         }
         return { rows: [] };
       }),
@@ -38,7 +41,10 @@ describe('Dispute Service', () => {
       query: vi.fn().mockImplementation(async (queryStr: string) => {
         if (queryStr === 'BEGIN' || queryStr === 'ROLLBACK') return {};
         if (queryStr.includes('SELECT * FROM loans')) {
-          return { rows: [{ id: 'L1', user_id: 'other-student', status: 'RETURNED', actual_return_date: recentDate }] };
+          return { rows: [{ id: 'L1', user_id: 'other-student', status: 'RETURNED' }] };
+        }
+        if (queryStr.includes('loan_status_histories')) {
+          return { rows: [{ created_at: recentDate }] };
         }
         return { rows: [] };
       }),
@@ -55,6 +61,6 @@ describe('Dispute Service', () => {
     } as never);
 
     await expect(DisputeService.reviewDispute('D1', 'admin-1', 'REJECTED', '')).rejects.toThrow('Final decisions require a reason/resolution.');
-    await expect(DisputeService.reviewDispute('D1', 'admin-1', 'APPROVED', '')).rejects.toThrow('Final decisions require a reason/resolution.');
+    await expect(DisputeService.reviewDispute('D1', 'admin-1', 'RESOLVED', '')).rejects.toThrow('Final decisions require a reason/resolution.');
   });
 });

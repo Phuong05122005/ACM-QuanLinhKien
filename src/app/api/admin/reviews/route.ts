@@ -3,6 +3,37 @@ import { successResponse, errorResponse } from '@/lib/api';
 import { pool } from '@/lib/pg';
 import { transitionLoanState } from '@/lib/loan/service';
 
+export async function GET(request: Request) {
+  try {
+    const session = await getSession();
+    if (!session || (!session.roles.includes('ADMIN') && !session.roles.includes('SUPER_ADMIN'))) {
+      return errorResponse('FORBIDDEN', 'Forbidden', undefined, 403);
+    }
+
+    const { searchParams } = new URL(request.url);
+    const filter = searchParams.get('filter') || 'pending'; // 'pending', 'all'
+
+    const res = await pool.query(`
+      SELECT 
+        s.id as scan_id, s.created_at as scan_time, s.image_url, s.status as ai_status, '' as discrepancy_details,
+        l.id as loan_id, l.status as loan_status,
+        u.username, u.full_name, u.student_code,
+        r.decision as admin_decision, r.comments as admin_reason, NULL as reviewed_at
+      FROM ai_scans s
+      JOIN loans l ON s.loan_id = l.id
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN ai_reviews r ON s.id = r.scan_id
+      ${filter === 'pending' ? 'WHERE r.id IS NULL AND s.status != \'NORMAL\'' : ''}
+      ORDER BY s.created_at DESC
+      LIMIT 100
+    `);
+
+    return successResponse(res.rows);
+  } catch (error: unknown) {
+    return errorResponse('SERVER_ERROR', 'Internal server error', undefined, 500);
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getSession();
@@ -31,8 +62,8 @@ export async function POST(request: Request) {
       loanId = scanRes.rows[0].loan_id;
 
       await client.query(`
-        INSERT INTO ai_reviews (id, scan_id, reviewer_id, decision, reason, reviewed_at)
-        VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())
+        INSERT INTO ai_reviews (id, scan_id, reviewer_id, decision, comments)
+        VALUES (gen_random_uuid(), $1, $2, $3, $4)
       `, [scan_id, session.userId, decision, reason || '']);
 
       await client.query(`

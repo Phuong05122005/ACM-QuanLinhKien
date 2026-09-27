@@ -52,17 +52,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       await client.query('BEGIN');
 
       const scanRes = await client.query(`
-        INSERT INTO ai_scans (id, loan_id, evidence_url, status, confidence_score, category, created_at)
-        VALUES (gen_random_uuid(), $1, $2, 'COMPLETED', $3, $4, NOW())
+        INSERT INTO ai_scans (id, loan_id, image_url, status, created_at)
+        VALUES (gen_random_uuid(), $1, $2, $3, NOW())
         RETURNING *
-      `, [loanId, filename, aiResult.confidence, aiResult.category]);
+      `, [loanId, filename, aiResult.category]);
       const scanId = scanRes.rows[0].id;
 
       for (const item of aiResult.items) {
+        const details = `${item.component_type} (Qty: ${item.quantity}, Cond: ${item.condition})`;
         await client.query(`
-          INSERT INTO ai_detected_items (id, scan_id, component_type, quantity, condition, confidence)
-          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5)
-        `, [scanId, item.component_type, item.quantity, item.condition, item.confidence]);
+          INSERT INTO ai_detected_items (id, scan_id, detected_component, confidence_score)
+          VALUES (gen_random_uuid(), $1, $2, $3)
+        `, [scanId, details, item.confidence]);
       }
 
       await client.query('COMMIT');

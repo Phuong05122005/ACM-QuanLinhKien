@@ -24,11 +24,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     // Upsert kit component
     const res = await pool.query(`
-      INSERT INTO kit_components (id, kit_id, component_id, expected_quantity)
-      VALUES (gen_random_uuid(), $1, $2, $3)
+      INSERT INTO kit_components (kit_id, component_id, quantity)
+      VALUES ($1, $2, $3)
       ON CONFLICT (kit_id, component_id) 
-      DO UPDATE SET expected_quantity = $3
-      RETURNING *
+      DO UPDATE SET quantity = $3
+      RETURNING kit_id || '-' || component_id as id, kit_id, component_id, quantity as expected_quantity
     `, [kit_id, component_id, qty]);
 
     await pool.query(`

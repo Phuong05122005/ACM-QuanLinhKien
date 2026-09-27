@@ -7,14 +7,14 @@ export async function generateQrCode(targetType: 'COMPONENT' | 'KIT', targetId: 
   try {
     await client.query('BEGIN');
 
-    // Inactivate existing QR codes for this target to ensure only one active
+    // Delete existing QR codes for this target to ensure only one active (since no is_active column exists)
     await client.query(`
-      UPDATE qr_codes SET is_active = false WHERE target_type = $1 AND target_id = $2
+      DELETE FROM qr_codes WHERE entity_type = $1 AND entity_id = $2
     `, [targetType, targetId]);
 
     const res = await client.query(`
-      INSERT INTO qr_codes (id, target_type, target_id, code, is_active, created_at, updated_at)
-      VALUES (gen_random_uuid(), $1, $2, $3, true, NOW(), NOW())
+      INSERT INTO qr_codes (id, entity_type, entity_id, code)
+      VALUES (gen_random_uuid(), $1, $2, $3)
       RETURNING *
     `, [targetType, targetId, code]);
 
@@ -75,9 +75,6 @@ export async function processPickup(loanId: string, qrCodeString: string, studen
     }
 
     const qr = qrRes.rows[0];
-    if (!qr.is_active) {
-      throw new Error('QR code is inactive');
-    }
 
     // Verify QR code target belongs to this loan
     const itemsRes = await client.query(`
@@ -85,8 +82,8 @@ export async function processPickup(loanId: string, qrCodeString: string, studen
     `, [loanId]);
 
     const matchingItem = itemsRes.rows.find(
-      (item) => (qr.target_type === 'KIT' && item.kit_id === qr.target_id) ||
-                (qr.target_type === 'COMPONENT' && item.component_id === qr.target_id)
+      (item) => (qr.entity_type === 'KIT' && item.kit_id === qr.entity_id) ||
+                (qr.entity_type === 'COMPONENT' && item.component_id === qr.entity_id)
     );
 
     if (!matchingItem) {
@@ -98,13 +95,6 @@ export async function processPickup(loanId: string, qrCodeString: string, studen
     const updateLoanRes = await client.query(`
       UPDATE loans SET status = 'BORROWED', updated_at = NOW() WHERE id = $1 RETURNING *
     `, [loanId]);
-
-    // 2. If kit, update kit status to IN_USE
-    if (qr.target_type === 'KIT') {
-      await client.query(`
-        UPDATE kits SET status = 'IN_USE', updated_at = NOW() WHERE id = $1
-      `, [qr.target_id]);
-    }
 
     // 3. Update loan history
     await client.query(`
@@ -120,9 +110,12 @@ export async function processPickup(loanId: string, qrCodeString: string, studen
 
     // 5. Notification
     await client.query(`
-      INSERT INTO notifications (id, user_id, title, message, is_read, created_at)
-      VALUES (gen_random_uuid(), $1, 'Loan Picked Up', $2, false, NOW())
-    `, [studentId, `You have successfully picked up loan ${loan.code}.`]);
+      INSERT INTO notifications (id, user_id, type, message, is_read, created_at)
+      VALUES (gen_random_uuid(), $1, 'LOAN_PICKED_UP', $2, false, NOW())
+    `, [studentId, `You have successfully picked up loan ${loan.loan_code}.`]);
+
+    // Burn QR code to ensure one-time use
+    await client.query(`DELETE FROM qr_codes WHERE code = $1`, [qrCodeString]);
 
     await client.query('COMMIT');
     return updateLoanRes.rows[0];

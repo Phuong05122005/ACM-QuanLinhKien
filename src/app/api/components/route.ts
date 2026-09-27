@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, category_id, total_quantity, identifier } = body;
+    const { name, category_id, total_quantity, identifier, image_url } = body;
 
     if (!name || !category_id || !identifier) {
       return errorResponse('VALIDATION_ERROR', 'Missing required fields', undefined, 400);
@@ -79,10 +79,10 @@ export async function POST(request: Request) {
     }
 
     const res = await pool.query(`
-      INSERT INTO components (id, name, category_id, total_quantity, available_quantity, identifier, created_at)
-      VALUES (gen_random_uuid(), $1, $2, $3, $3, $4, NOW())
+      INSERT INTO components (id, name, category_id, total_quantity, available_quantity, identifier, image_url, created_at)
+      VALUES (gen_random_uuid(), $1, $2, $3, $3, $4, $5, NOW())
       RETURNING *
-    `, [name, category_id, qty, identifier]);
+    `, [name, category_id, qty, identifier, image_url || null]);
 
     await pool.query(`
       INSERT INTO audit_logs (id, user_id, action, resource, details)

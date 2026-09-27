@@ -91,13 +91,6 @@
         "models": {
           "AiDetectedItem": {
             "fields": {
-              "condition": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "confidence_score": {
                 "nullable": false,
                 "type": {
@@ -116,13 +109,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "quantity": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -154,9 +140,6 @@
             },
             "storage": {
               "fields": {
-                "condition": {
-                  "column": "condition"
-                },
                 "confidence_score": {
                   "column": "confidence_score"
                 },
@@ -165,9 +148,6 @@
                 },
                 "id": {
                   "column": "id"
-                },
-                "quantity": {
-                  "column": "quantity"
                 },
                 "scan_id": {
                   "column": "scan_id"
@@ -183,13 +163,6 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "created_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -261,9 +234,6 @@
                 "comments": {
                   "column": "comments"
                 },
-                "created_at": {
-                  "column": "created_at"
-                },
                 "decision": {
                   "column": "decision"
                 },
@@ -311,24 +281,10 @@
                   "kind": "scalar"
                 }
               },
-              "result": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "status": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "updated_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               }
@@ -395,14 +351,8 @@
                 "loan_id": {
                   "column": "loan_id"
                 },
-                "result": {
-                  "column": "result"
-                },
                 "status": {
                   "column": "status"
-                },
-                "updated_at": {
-                  "column": "updated_at"
                 }
               },
               "namespaceId": "public",
@@ -448,13 +398,6 @@
               },
               "resource": {
                 "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "resource_id": {
-                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -506,9 +449,6 @@
                 "resource": {
                   "column": "resource"
                 },
-                "resource_id": {
-                  "column": "resource_id"
-                },
                 "user_id": {
                   "column": "user_id"
                 }
@@ -540,13 +480,6 @@
                   "kind": "scalar"
                 }
               },
-              "description": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -556,6 +489,13 @@
               },
               "identifier": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "image_url": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -572,13 +512,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "updated_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               }
@@ -657,23 +590,20 @@
                 "created_at": {
                   "column": "created_at"
                 },
-                "description": {
-                  "column": "description"
-                },
                 "id": {
                   "column": "id"
                 },
                 "identifier": {
                   "column": "identifier"
                 },
+                "image_url": {
+                  "column": "image_url"
+                },
                 "name": {
                   "column": "name"
                 },
                 "total_quantity": {
                   "column": "total_quantity"
-                },
-                "updated_at": {
-                  "column": "updated_at"
                 }
               },
               "namespaceId": "public",
@@ -739,13 +669,6 @@
           },
           "Dispute": {
             "fields": {
-              "admin_notes": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "created_at": {
                 "nullable": false,
                 "type": {
@@ -753,15 +676,8 @@
                   "kind": "scalar"
                 }
               },
-              "deadline": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "kind": "scalar"
-                }
-              },
               "description": {
-                "nullable": true,
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -781,24 +697,10 @@
                   "kind": "scalar"
                 }
               },
-              "reason": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "status": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "updated_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -861,14 +763,8 @@
             },
             "storage": {
               "fields": {
-                "admin_notes": {
-                  "column": "admin_notes"
-                },
                 "created_at": {
                   "column": "created_at"
-                },
-                "deadline": {
-                  "column": "deadline"
                 },
                 "description": {
                   "column": "description"
@@ -879,14 +775,8 @@
                 "loan_id": {
                   "column": "loan_id"
                 },
-                "reason": {
-                  "column": "reason"
-                },
                 "status": {
                   "column": "status"
-                },
-                "updated_at": {
-                  "column": "updated_at"
                 },
                 "user_id": {
                   "column": "user_id"
@@ -900,13 +790,6 @@
             "fields": {
               "dispute_id": {
                 "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "file_name": {
-                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -930,13 +813,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "uploaded_by": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               }
@@ -964,9 +840,6 @@
                 "dispute_id": {
                   "column": "dispute_id"
                 },
-                "file_name": {
-                  "column": "file_name"
-                },
                 "file_url": {
                   "column": "file_url"
                 },
@@ -975,9 +848,6 @@
                 },
                 "uploaded_at": {
                   "column": "uploaded_at"
-                },
-                "uploaded_by": {
-                  "column": "uploaded_by"
                 }
               },
               "namespaceId": "public",
@@ -1002,13 +872,6 @@
               },
               "id": {
                 "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "notes": {
-                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1065,9 +928,6 @@
                 "id": {
                   "column": "id"
                 },
-                "notes": {
-                  "column": "notes"
-                },
                 "quantity_change": {
                   "column": "quantity_change"
                 },
@@ -1084,13 +944,6 @@
           },
           "Kit": {
             "fields": {
-              "created_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "kind": "scalar"
-                }
-              },
               "description": {
                 "nullable": true,
                 "type": {
@@ -1118,13 +971,6 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
-              },
-              "updated_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {
@@ -1146,9 +992,6 @@
             },
             "storage": {
               "fields": {
-                "created_at": {
-                  "column": "created_at"
-                },
                 "description": {
                   "column": "description"
                 },
@@ -1160,9 +1003,6 @@
                 },
                 "name": {
                   "column": "name"
-                },
-                "updated_at": {
-                  "column": "updated_at"
                 }
               },
               "namespaceId": "public",
@@ -1178,17 +1018,17 @@
                   "kind": "scalar"
                 }
               },
-              "expected_quantity": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
               "kit_id": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               }
@@ -1232,11 +1072,11 @@
                 "component_id": {
                   "column": "component_id"
                 },
-                "expected_quantity": {
-                  "column": "expected_quantity"
-                },
                 "kit_id": {
                   "column": "kit_id"
+                },
+                "quantity": {
+                  "column": "quantity"
                 }
               },
               "namespaceId": "public",
@@ -1259,6 +1099,13 @@
                   "kind": "scalar"
                 }
               },
+              "failed_attempts": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -1266,10 +1113,10 @@
                   "kind": "scalar"
                 }
               },
-              "kit_id": {
-                "nullable": true,
+              "is_active": {
+                "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -1280,10 +1127,10 @@
                   "kind": "scalar"
                 }
               },
-              "notes": {
+              "locked_until": {
                 "nullable": true,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -1395,17 +1242,20 @@
                 "due_date": {
                   "column": "due_date"
                 },
+                "failed_attempts": {
+                  "column": "failed_attempts"
+                },
                 "id": {
                   "column": "id"
                 },
-                "kit_id": {
-                  "column": "kit_id"
+                "is_active": {
+                  "column": "is_active"
                 },
                 "loan_code": {
                   "column": "loan_code"
                 },
-                "notes": {
-                  "column": "notes"
+                "locked_until": {
+                  "column": "locked_until"
                 },
                 "status": {
                   "column": "status"
@@ -1639,13 +1489,6 @@
                   "kind": "scalar"
                 }
               },
-              "metadata": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "type": {
                 "nullable": false,
                 "type": {
@@ -1693,9 +1536,6 @@
                 "message": {
                   "column": "message"
                 },
-                "metadata": {
-                  "column": "metadata"
-                },
                 "type": {
                   "column": "type"
                 },
@@ -1713,13 +1553,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "created_at": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -1743,13 +1576,6 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
-              },
-              "is_active": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {},
@@ -1757,9 +1583,6 @@
               "fields": {
                 "code": {
                   "column": "code"
-                },
-                "created_at": {
-                  "column": "created_at"
                 },
                 "entity_id": {
                   "column": "entity_id"
@@ -1769,9 +1592,6 @@
                 },
                 "id": {
                   "column": "id"
-                },
-                "is_active": {
-                  "column": "is_active"
                 }
               },
               "namespaceId": "public",
@@ -1837,10 +1657,10 @@
           },
           "SystemConfig": {
             "fields": {
-              "description": {
-                "nullable": true,
+              "failed_attempts": {
+                "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -1851,6 +1671,13 @@
                   "kind": "scalar"
                 }
               },
+              "is_active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "key": {
                 "nullable": false,
                 "type": {
@@ -1858,17 +1685,17 @@
                   "kind": "scalar"
                 }
               },
-              "updated_at": {
-                "nullable": false,
+              "locked_until": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
-              "updated_by": {
-                "nullable": true,
+              "updated_at": {
+                "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -1883,20 +1710,23 @@
             "relations": {},
             "storage": {
               "fields": {
-                "description": {
-                  "column": "description"
+                "failed_attempts": {
+                  "column": "failed_attempts"
                 },
                 "id": {
                   "column": "id"
                 },
+                "is_active": {
+                  "column": "is_active"
+                },
                 "key": {
                   "column": "key"
                 },
+                "locked_until": {
+                  "column": "locked_until"
+                },
                 "updated_at": {
                   "column": "updated_at"
-                },
-                "updated_by": {
-                  "column": "updated_by"
                 },
                 "value": {
                   "column": "value"
@@ -2208,11 +2038,6 @@
           "table": {
             "ai_detected_items": {
               "columns": {
-                "condition": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "confidence_score": {
                   "codecId": "pg/float8@1",
                   "nativeType": "float8",
@@ -2228,15 +2053,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "quantity": {
-                  "codecId": "pg/int4@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": 1
-                  },
-                  "nativeType": "int4",
-                  "nullable": false
-                },
                 "scan_id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2245,7 +2061,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "scan_id"
@@ -2286,15 +2101,6 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "created_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
                 "decision": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2318,7 +2124,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "scan_id"
@@ -2335,7 +2140,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "reviewer_id"
@@ -2353,14 +2157,6 @@
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "created_at"
-                  ],
-                  "name": "ai_reviews_created_at_idx_225d8c0f",
-                  "prefix": "ai_reviews_created_at_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "reviewer_id"
@@ -2411,29 +2207,14 @@
                   "nativeType": "text",
                   "nullable": true
                 },
-                "result": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "status": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
-                },
-                "updated_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
                   "nullable": false
                 }
               },
               "foreignKeys": [
                 {
-                  "onDelete": "setNull",
                   "source": {
                     "columns": [
                       "loan_id"
@@ -2453,26 +2234,10 @@
               "indexes": [
                 {
                   "columns": [
-                    "created_at"
-                  ],
-                  "name": "ai_scans_created_at_idx_225d8c0f",
-                  "prefix": "ai_scans_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
                     "loan_id"
                   ],
                   "name": "ai_scans_loan_id_idx_cf51812a",
                   "prefix": "ai_scans_loan_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "status"
-                  ],
-                  "name": "ai_scans_status_idx_e98638ab",
-                  "prefix": "ai_scans_status_idx",
                   "unique": false
                 }
               ],
@@ -2519,11 +2284,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "resource_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "user_id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2532,7 +2292,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "setNull",
                   "source": {
                     "columns": [
                       "user_id"
@@ -2550,30 +2309,6 @@
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "action"
-                  ],
-                  "name": "audit_logs_action_idx_cd0d2116",
-                  "prefix": "audit_logs_action_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "created_at"
-                  ],
-                  "name": "audit_logs_created_at_idx_225d8c0f",
-                  "prefix": "audit_logs_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "resource"
-                  ],
-                  "name": "audit_logs_resource_idx_77c7859a",
-                  "prefix": "audit_logs_resource_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "user_id"
@@ -2648,11 +2383,6 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "description": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2662,6 +2392,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "image_url": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "name": {
                   "codecId": "pg/text@1",
@@ -2676,20 +2411,10 @@
                   },
                   "nativeType": "int4",
                   "nullable": false
-                },
-                "updated_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
                 }
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "category_id"
@@ -2714,14 +2439,6 @@
                   "name": "components_category_id_idx_da7213d4",
                   "prefix": "components_category_id_idx",
                   "unique": false
-                },
-                {
-                  "columns": [
-                    "identifier"
-                  ],
-                  "name": "components_identifier_idx_79a0dbb3",
-                  "prefix": "components_identifier_idx",
-                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -2744,11 +2461,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "file_name": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "file_url": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -2767,16 +2479,10 @@
                   },
                   "nativeType": "timestamptz",
                   "nullable": false
-                },
-                "uploaded_by": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
                 }
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "dispute_id"
@@ -2812,11 +2518,6 @@
             },
             "disputes": {
               "columns": {
-                "admin_notes": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "created_at": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -2826,15 +2527,10 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "deadline": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "nativeType": "timestamptz",
-                  "nullable": true
-                },
                 "description": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": true
+                  "nullable": false
                 },
                 "id": {
                   "codecId": "pg/text@1",
@@ -2846,27 +2542,9 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "reason": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
-                },
                 "status": {
                   "codecId": "pg/text@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": "PENDING"
-                  },
                   "nativeType": "text",
-                  "nullable": false
-                },
-                "updated_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
                   "nullable": false
                 },
                 "user_id": {
@@ -2877,7 +2555,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "loan_id"
@@ -2894,7 +2571,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "user_id"
@@ -2914,26 +2590,10 @@
               "indexes": [
                 {
                   "columns": [
-                    "created_at"
-                  ],
-                  "name": "disputes_created_at_idx_225d8c0f",
-                  "prefix": "disputes_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
                     "loan_id"
                   ],
                   "name": "disputes_loan_id_idx_cf51812a",
                   "prefix": "disputes_loan_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "status"
-                  ],
-                  "name": "disputes_status_idx_e98638ab",
-                  "prefix": "disputes_status_idx",
                   "unique": false
                 },
                 {
@@ -2973,11 +2633,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "notes": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "quantity_change": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
@@ -2996,7 +2651,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "component_id"
@@ -3021,22 +2675,6 @@
                   "name": "inventory_transactions_component_id_idx_ebd7854e",
                   "prefix": "inventory_transactions_component_id_idx",
                   "unique": false
-                },
-                {
-                  "columns": [
-                    "created_at"
-                  ],
-                  "name": "inventory_transactions_created_at_idx_225d8c0f",
-                  "prefix": "inventory_transactions_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "transaction_type"
-                  ],
-                  "name": "inventory_transactions_transaction_type_idx_408e5313",
-                  "prefix": "inventory_transactions_transaction_type_idx",
-                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -3053,20 +2691,19 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "expected_quantity": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": false
-                },
                 "kit_id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
                   "nullable": false
                 }
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "kit_id"
@@ -3083,7 +2720,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "component_id"
@@ -3128,15 +2764,6 @@
             },
             "kits": {
               "columns": {
-                "created_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
                 "description": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -3156,28 +2783,10 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                },
-                "updated_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
                 }
               },
               "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "kit_code"
-                  ],
-                  "name": "kits_kit_code_idx_9e1cd003",
-                  "prefix": "kits_kit_code_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -3216,7 +2825,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "loan_id"
@@ -3233,7 +2841,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "component_id"
@@ -3314,7 +2921,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "loan_id"
@@ -3331,7 +2937,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "changed_by"
@@ -3359,26 +2964,10 @@
                 },
                 {
                   "columns": [
-                    "created_at"
-                  ],
-                  "name": "loan_status_histories_created_at_idx_225d8c0f",
-                  "prefix": "loan_status_histories_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
                     "loan_id"
                   ],
                   "name": "loan_status_histories_loan_id_idx_cf51812a",
                   "prefix": "loan_status_histories_loan_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "status"
-                  ],
-                  "name": "loan_status_histories_status_idx_e98638ab",
-                  "prefix": "loan_status_histories_status_idx",
                   "unique": false
                 }
               ],
@@ -3405,32 +2994,41 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "failed_attempts": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
-                "kit_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
+                "is_active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
                 },
                 "loan_code": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
-                "notes": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
+                "locked_until": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
                   "nullable": true
                 },
                 "status": {
                   "codecId": "pg/text@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": "PENDING"
-                  },
                   "nativeType": "text",
                   "nullable": false
                 },
@@ -3451,7 +3049,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "user_id"
@@ -3469,38 +3066,6 @@
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "created_at"
-                  ],
-                  "name": "loans_created_at_idx_225d8c0f",
-                  "prefix": "loans_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "due_date"
-                  ],
-                  "name": "loans_due_date_idx_3bbceba8",
-                  "prefix": "loans_due_date_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "loan_code"
-                  ],
-                  "name": "loans_loan_code_idx_31d7d43a",
-                  "prefix": "loans_loan_code_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "status"
-                  ],
-                  "name": "loans_status_idx_e98638ab",
-                  "prefix": "loans_status_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "user_id"
@@ -3553,11 +3118,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "metadata": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "type": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -3571,7 +3131,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "user_id"
@@ -3589,22 +3148,6 @@
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "created_at"
-                  ],
-                  "name": "notifications_created_at_idx_225d8c0f",
-                  "prefix": "notifications_created_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "is_read"
-                  ],
-                  "name": "notifications_is_read_idx_5d8412f2",
-                  "prefix": "notifications_is_read_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "user_id"
@@ -3628,15 +3171,6 @@
                   "nativeType": "text",
                   "nullable": false
                 },
-                "created_at": {
-                  "codecId": "pg/timestamptz-temporal@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
                 "entity_id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -3651,45 +3185,10 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                },
-                "is_active": {
-                  "codecId": "pg/bool@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": true
-                  },
-                  "nativeType": "bool",
-                  "nullable": false
                 }
               },
               "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "code"
-                  ],
-                  "name": "qr_codes_code_idx_8e43b86b",
-                  "prefix": "qr_codes_code_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "entity_type",
-                    "entity_id"
-                  ],
-                  "name": "qr_codes_entity_type_entity_id_idx_4cde03a1",
-                  "prefix": "qr_codes_entity_type_entity_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "is_active"
-                  ],
-                  "name": "qr_codes_is_active_idx_68cfa343",
-                  "prefix": "qr_codes_is_active_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -3738,20 +3237,38 @@
             },
             "system_configs": {
               "columns": {
-                "description": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
+                "failed_attempts": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
                 },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
+                "is_active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "key": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "locked_until": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
                 },
                 "updated_at": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -3762,11 +3279,6 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "updated_by": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
                 "value": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -3774,16 +3286,7 @@
                 }
               },
               "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "key"
-                  ],
-                  "name": "system_configs_key_idx_2077e847",
-                  "prefix": "system_configs_key_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -3812,7 +3315,6 @@
               },
               "foreignKeys": [
                 {
-                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "user_id"
@@ -3829,7 +3331,6 @@
                   }
                 },
                 {
-                  "onDelete": "restrict",
                   "source": {
                     "columns": [
                       "role_id"
@@ -3947,40 +3448,7 @@
                 }
               },
               "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "email"
-                  ],
-                  "name": "users_email_idx_46df9cad",
-                  "prefix": "users_email_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "is_active"
-                  ],
-                  "name": "users_is_active_idx_68cfa343",
-                  "prefix": "users_is_active_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "student_code"
-                  ],
-                  "name": "users_student_code_idx_603ed25e",
-                  "prefix": "users_student_code_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "username"
-                  ],
-                  "name": "users_username_idx_b719d535",
-                  "prefix": "users_username_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -4010,7 +3478,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4f1284b1ec046d7532e72a76b867898d66e97a55cac9e824868f51f267f0e77f"
+    "storageHash": "2aea0ad32f46f199802353364cdd553c5e36c5ddff1e830835315b0dec1e44c9"
   },
   "execution": {
     "executionHash": "7bae6d2a56ec3e9f5b23354c8e10426a9893b1fe5595dc86e6ec81083154758a",

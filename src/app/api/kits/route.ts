@@ -7,26 +7,28 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
 
-    const queryParts = ['k.is_active = true'];
+    const queryParts: string[] = [];
     const queryParams: unknown[] = [];
     let paramIndex = 1;
 
     if (search) {
-      queryParts.push(`(k.name ILIKE $${paramIndex} OR k.code ILIKE $${paramIndex})`);
+      queryParts.push(`(k.name ILIKE $${paramIndex} OR k.kit_code ILIKE $${paramIndex})`);
       queryParams.push(`%${search}%`);
       paramIndex++;
     }
 
+    const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
+
     const dataQuery = `
-      SELECT k.*, 
+      SELECT k.id, k.name, k.description, k.kit_code as code, 'AVAILABLE' as status, true as is_active, 
         COALESCE(
-          MIN(FLOOR(c.available_quantity / NULLIF(kc.expected_quantity, 0))),
+          MIN(FLOOR(c.available_quantity / NULLIF(kc.quantity, 0))),
           0
         ) as available_kits_count
       FROM kits k
       LEFT JOIN kit_components kc ON k.id = kc.kit_id
       LEFT JOIN components c ON kc.component_id = c.id
-      WHERE ${queryParts.join(' AND ')}
+      ${whereClause}
       GROUP BY k.id
       ORDER BY k.name ASC
     `;
@@ -47,20 +49,17 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, description, code, status } = body;
+    const { name, description, code } = body;
 
     if (!name || !code) {
       return errorResponse('VALIDATION_ERROR', 'Missing required fields', undefined, 400);
     }
 
-    const validStatuses = ['AVAILABLE', 'RESERVED', 'IN_USE', 'MAINTENANCE', 'INACTIVE'];
-    const kitStatus = validStatuses.includes(status) ? status : 'AVAILABLE';
-
     const res = await pool.query(`
-      INSERT INTO kits (id, name, description, code, status, is_active, created_at, updated_at)
-      VALUES (gen_random_uuid(), $1, $2, $3, $4, true, NOW(), NOW())
-      RETURNING *
-    `, [name, description || '', code, kitStatus]);
+      INSERT INTO kits (id, name, description, kit_code)
+      VALUES (gen_random_uuid(), $1, $2, $3)
+      RETURNING id, name, description, kit_code as code, 'AVAILABLE' as status, true as is_active
+    `, [name, description || '', code]);
 
     await pool.query(`
       INSERT INTO audit_logs (id, user_id, action, resource, details)

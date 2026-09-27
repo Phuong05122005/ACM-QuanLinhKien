@@ -61,7 +61,7 @@ describe('Kits API', () => {
       
       expect(pool.query).toHaveBeenCalledWith(
         expect.stringContaining('INSERT INTO kits'),
-        expect.arrayContaining(['Kit A', '', 'K-001', 'AVAILABLE'])
+        expect.arrayContaining(['Kit A', '', 'K-001'])
       );
     });
   });

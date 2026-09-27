@@ -7,9 +7,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params;
     
     const kitRes = await pool.query(`
-      SELECT k.*, 
+      SELECT k.id, k.name, k.description, k.kit_code as code, 'AVAILABLE' as status, true as is_active, 
         COALESCE(
-          MIN(FLOOR(c.available_quantity / NULLIF(kc.expected_quantity, 0))),
+          MIN(FLOOR(c.available_quantity / NULLIF(kc.quantity, 0))),
           0
         ) as available_kits_count
       FROM kits k
@@ -27,7 +27,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     // Fetch components
     const componentsRes = await pool.query(`
-      SELECT kc.id as kit_component_id, kc.expected_quantity, c.id as component_id, c.name, c.identifier, c.available_quantity
+      SELECT kc.kit_id || '-' || kc.component_id as kit_component_id, kc.quantity as expected_quantity, c.id as component_id, c.name, c.identifier, c.available_quantity
       FROM kit_components kc
       JOIN components c ON kc.component_id = c.id
       WHERE kc.kit_id = $1
@@ -51,24 +51,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const { id } = await params;
     const body = await request.json();
-    const { name, description, code, status, is_active } = body;
-
-    const validStatuses = ['AVAILABLE', 'RESERVED', 'IN_USE', 'MAINTENANCE', 'INACTIVE'];
-    if (status && !validStatuses.includes(status)) {
-      return errorResponse('VALIDATION_ERROR', 'Invalid status', undefined, 400);
-    }
+    const { name, description, code } = body;
 
     const res = await pool.query(`
       UPDATE kits 
       SET name = COALESCE($1, name),
           description = COALESCE($2, description),
-          code = COALESCE($3, code),
-          status = COALESCE($4, status),
-          is_active = COALESCE($5, is_active),
-          updated_at = NOW()
-      WHERE id = $6
-      RETURNING *
-    `, [name, description, code, status, is_active, id]);
+          kit_code = COALESCE($3, kit_code)
+      WHERE id = $4
+      RETURNING id, name, description, kit_code as code, 'AVAILABLE' as status, true as is_active
+    `, [name, description, code, id]);
 
     if (res.rows.length === 0) {
       return errorResponse('NOT_FOUND', 'Kit not found', undefined, 404);

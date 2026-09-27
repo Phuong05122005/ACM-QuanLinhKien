@@ -45,14 +45,16 @@ export async function POST(request: Request) {
     if (!session) return errorResponse('UNAUTHORIZED', 'Unauthorized', undefined, 401);
 
     const body = await request.json();
-    const { expected_return_date, items } = body;
+    // Accept both due_date (canonical) and expected_return_date (legacy client compat)
+    const due_date = body.due_date || body.expected_return_date;
+    const { items } = body;
 
-    if (!expected_return_date || !items || !Array.isArray(items) || items.length === 0) {
+    if (!due_date || !items || !Array.isArray(items) || items.length === 0) {
       return errorResponse('VALIDATION_ERROR', 'Missing required fields or items', undefined, 400);
     }
 
     try {
-      const loan = await createLoan(session.userId, expected_return_date, items);
+      const loan = await createLoan(session.userId, due_date, items);
       return successResponse(loan, 201);
     } catch(e: unknown) { 
 //error: unknown) {
